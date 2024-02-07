@@ -1,17 +1,22 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-
+const bcrypt = require("bcrypt");
+var jwt = require('jsonwebtoken');
 
 const createUser = async(req,res,nxt)=>{
-    const {name, email} = req.body;
+    const {name, email ,password} = req.body;
+    // encrypt:
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     console.log(name, email);
     const createdUser = await prisma.user.create({
         data: {
-            name : name, email : email
+            name : name, email : email, password : hashedPassword
         }
     });
     console.log(createdUser);
-    res.send(createdUser);
+    let generatedToken = jwt.sign({ userId: createdUser.id }, secretKey, { expiresIn: '1h' });
+    res.send({token : generatedToken});
 };
 
 const findUser = async(req,res,nxt)=>{

@@ -3,9 +3,12 @@ const { createUser, findUser, deleteUser, updateUser } = require('../controllers
 
 const router = express.Router();
 
-router.post("/createUser",createUser);
+router.post("/register",createUser);
+router.get("/login",findUser);
+
+// router.use(auth);
 router.post("/updateUser",updateUser);
-router.get("/findbyemail",findUser);
+
 
 router.delete("/deletebyemail",deleteUser);
 
