@@ -35,9 +35,21 @@ const deleteUser = async(req,res,nxt)=>{
       console.log("Deleted: ", deletedUser);
 };
 
+const updateUser= async(req,res,nxt)=>{
+    const {email, name} = req.body;
+    const user = await prisma.user.update({
+    where: { email : email},
+    data: { name : name},
+    });
+
+    console.log("User: updated ", user);
+    res.send(user);
+}
+
 
 module.exports = {
     createUser,
     findUser, 
-    deleteUser
+    deleteUser,
+    updateUser
 }
