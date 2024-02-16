@@ -7,6 +7,14 @@ const secretKey = "black";
 
 const createUser = async(req,res,nxt)=>{
     const {name, email ,password} = req.body;
+    const user = await prisma.user.findUnique({
+        where: { email: email },
+    });
+
+    // Check if the user exists
+    if (user) {
+        return res.status(401).send({ message: 'Already exisits pls login' });
+    }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     console.log(name, email);
@@ -60,9 +68,10 @@ const deleteUser = async(req,res,nxt)=>{
 
 const updateUser= async(req,res,nxt)=>{
     const {email, name} = req.body;
+    console.log(email,name)
     const user = await prisma.user.update({
-    where: { email : email},
-    data: { name : name},
+    where: { id : req.userId},
+    data: { name : name, email: email},
     });
 
     console.log("User: updated ", user);
@@ -72,7 +81,6 @@ const updateUser= async(req,res,nxt)=>{
 
 module.exports = {
     createUser,
-    findUser, 
     deleteUser,
     updateUser,
     login

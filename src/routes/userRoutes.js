@@ -5,9 +5,11 @@ const { authenticateToken } = require('../auth/authProvider');
 const router = express.Router();
 
 router.post("/register",createUser);
-router.get("/login",login);
+router.post("/login",login);
 
 router.use(authenticateToken);
+
+
 router.post("/updateUser",updateUser);
 router.delete("/deletebyemail",deleteUser);
 
