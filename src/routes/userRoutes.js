@@ -1,15 +1,14 @@
 const express = require('express');
-const { createUser, findUser, deleteUser, updateUser } = require('../controllers/userController');
+const { createUser, deleteUser, updateUser, login } = require('../controllers/userController');
+const { authenticateToken } = require('../auth/authProvider');
 
 const router = express.Router();
 
 router.post("/register",createUser);
-router.get("/login",findUser);
+router.get("/login",login);
 
-// router.use(auth);
+router.use(authenticateToken);
 router.post("/updateUser",updateUser);
-
-
 router.delete("/deletebyemail",deleteUser);
 
 

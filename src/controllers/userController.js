@@ -3,9 +3,10 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 var jwt = require('jsonwebtoken');
 
+const secretKey = "black";
+
 const createUser = async(req,res,nxt)=>{
     const {name, email ,password} = req.body;
-    // encrypt:
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     console.log(name, email);
@@ -16,25 +17,42 @@ const createUser = async(req,res,nxt)=>{
     });
     console.log(createdUser);
     let generatedToken = jwt.sign({ userId: createdUser.id }, secretKey, { expiresIn: '1h' });
+    // req.userId = createdUser.id;
     res.send({token : generatedToken});
 };
 
-const findUser = async(req,res,nxt)=>{
-    const {name, email} = req.body;
-    console.log(name, email);
-    const foundUser = await prisma.user.findUnique({
+
+
+const login = async (req, res, nxt) => {
+    const { email, password } = req.body;
+
+    // Find the user by email
+    const user = await prisma.user.findUnique({
         where: { email: email },
-      });
-      res.status(201).send(foundUser)
-      console.log(foundUser);
+    });
+
+    // Check if the user exists
+    if (!user) {
+        return res.status(401).send({ message: 'Invalid email or password' });
+    }
+
+    // Compare the provided password with the stored hashed password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    // If passwords match, generate a new token and send it back
+    if (passwordMatch) {
+        const generatedToken = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+        return res.send({ token: generatedToken });
+    } else {
+        // If passwords don't match, return an authentication error
+        return res.status(401).send({ message: 'Invalid email or password' });
+    }
 };
 
-
 const deleteUser = async(req,res,nxt)=>{
-    const {email} = req.body;
-    console.log(email);
+    const { userId } = req;
     const deletedUser = await prisma.user.delete({
-        where: { email: email },
+        where: { id: userId },
       });
       res.send(`Delete the user successfully`)
       console.log("Deleted: ", deletedUser);
@@ -56,5 +74,6 @@ module.exports = {
     createUser,
     findUser, 
     deleteUser,
-    updateUser
+    updateUser,
+    login
 }
