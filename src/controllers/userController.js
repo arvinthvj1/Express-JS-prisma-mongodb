@@ -77,11 +77,15 @@ const updateUser= async(req,res,nxt)=>{
     console.log("User: updated ", user);
     res.send(user);
 }
+const isAuthCheck = async(req,res,nxt)=>{
+   res.status(201).send("authenticated")
+}
 
 
 module.exports = {
     createUser,
     deleteUser,
     updateUser,
-    login
+    login,
+    isAuthCheck
 }
