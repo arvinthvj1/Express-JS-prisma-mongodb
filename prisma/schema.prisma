@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,10 +8,53 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  email   String   @unique
-  name    String?
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  email    String  @unique
+  name     String?
   password String
+}
+
+model Categories {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  parent_cat  String?
+  cate_id     Int  @unique
+  name        String
+  slug        String
+  meta_title  String
+  meta_desc   String?
+  meta_key    String?
+  contents    String?
+  image       String?
+  image_thumb String?
+  prio        Int?
+  status      Int
+  products    Product[]
+}
+
+model Product {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  sku         String   
+  product_id  Int     @unique
+  name        String
+  slug        String
+  variant     String
+  weight      Int
+  unit        String
+  cate_id     Int 
+  parent_pro  Int?
+  details     String
+  price       Float
+  hsn         String?
+  list_order  Int?
+  status      Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  attributes  Json?
+  media       Json?
+  brand       String?
+  offers      Json?
+  seo         Json?
+  category   Categories @relation(fields: [cate_id], references: [cate_id])
 }
 
 
