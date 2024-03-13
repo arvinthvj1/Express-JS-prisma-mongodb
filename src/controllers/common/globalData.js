@@ -13,7 +13,7 @@ const commonCrudHandler = async (req, res, nxt) => {
           include: relation
         });
         console.log(data);
-        res.status(200).send({data})
+        res.status(200).send(data)
     }catch(err){
          res.status(400).send(err)
     }
